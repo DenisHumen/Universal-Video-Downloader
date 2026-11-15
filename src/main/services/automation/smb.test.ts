@@ -78,7 +78,7 @@ vi.mock('node-smb2', async () => {
   }
   return { default: { Client } }
 })
-vi.mock('node-smb2/dist/client/File', () => ({
+vi.mock('node-smb2/dist/client/File.js', () => ({
   default: class {
     fileSize: bigint | undefined
     async open(path: string): Promise<void> {

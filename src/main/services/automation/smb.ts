@@ -163,7 +163,7 @@ export const smbTiming = { sizeSettleMs: 10_000 }
  * in a full one the file would simply not be on it.
  */
 async function sizeOnShare(tree: Client, path: string): Promise<bigint> {
-  const File = ((await import('node-smb2/dist/client/File')) as any).default
+  const File = ((await import('node-smb2/dist/client/File.js')) as any).default
   const file = new File(tree)
   tree.registerFile?.(file)
   try {
