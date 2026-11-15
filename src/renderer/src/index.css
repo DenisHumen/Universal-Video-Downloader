@@ -84,6 +84,8 @@
   --z-toast: 50;
   --z-overlay: 60;
   --z-modal: 70;
+  /* Above every modal: a drop-down, menu or tooltip opened inside a dialog belongs to it. */
+  --z-popover: 90;
 }
 
 /*

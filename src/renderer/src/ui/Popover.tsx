@@ -139,7 +139,8 @@ export default function Popover({
     const up = window.innerHeight - r.bottom < ROOM_BELOW && r.top > window.innerHeight - r.bottom
     setStyle({
       position: 'fixed',
-      zIndex: 'var(--z-overlay)' as unknown as number,
+      // Above a dialog it was opened from: at the overlay level a dub list in Add Watch opened behind it.
+      zIndex: 'var(--z-popover)' as unknown as number,
       ...(up ? { bottom: window.innerHeight - r.top + GAP } : { top: r.bottom + GAP }),
       ...(align === 'end' ? { right: window.innerWidth - r.right } : { left: r.left }),
       ...(fit && {

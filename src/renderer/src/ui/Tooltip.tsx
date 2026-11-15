@@ -120,7 +120,7 @@ export default function Tooltip({ label, children, side = 'bottom', describes = 
             id={id}
             role="tooltip"
             className="ui-tooltip"
-            style={{ top: place.top, left: place.left, transform: place.transform, zIndex: 'var(--z-overlay)' }}
+            style={{ top: place.top, left: place.left, transform: place.transform, zIndex: 'var(--z-popover)' }}
           >
             {label}
           </div>,
