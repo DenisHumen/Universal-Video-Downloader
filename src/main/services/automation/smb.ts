@@ -158,12 +158,28 @@ function entryName(filename: string): string {
 export const smbTiming = { sizeSettleMs: 10_000 }
 
 /**
+ * The class a CommonJS file of node-smb2 exports, however it was loaded.
+ *
+ * The installed app loads it as ESM, where `default` is the whole
+ * `module.exports` and the class is `default.default`: "File is not a
+ * constructor" in 4.8.3. Vitest hands over the class itself as `default`,
+ * which is why the tests never saw it. dynamic-imports.test.ts checks this
+ * against real Node.
+ */
+export function fileClass(mod: unknown): new (tree: unknown) => any {
+  const outer = (mod as { default?: unknown })?.default
+  const found = typeof outer === 'function' ? outer : (outer as { default?: unknown })?.default
+  if (typeof found !== 'function') throw new Error('node-smb2 no longer exports its File class where it used to')
+  return found as new (tree: unknown) => any
+}
+
+/**
  * How many bytes of `path` the share holds, by opening it and reading what the
  * server says. Not from a listing: the library reads one page of a folder, and
  * in a full one the file would simply not be on it.
  */
 async function sizeOnShare(tree: Client, path: string): Promise<bigint> {
-  const File = ((await import('node-smb2/dist/client/File.js')) as any).default
+  const File = fileClass(await import('node-smb2/dist/client/File.js'))
   const file = new File(tree)
   tree.registerFile?.(file)
   try {

@@ -970,6 +970,7 @@ export const en = {
   'main.smb.quota': 'The account has used up its space on the share.',
   'main.smb.fileOpen': 'That file is open on the server, so it cannot be replaced right now.',
   'main.smb.deleting': 'The server is still deleting an earlier copy of that file.',
+  'main.smb.libraryChanged': 'The app could not load its network share code. Update the app or send a report.',
   'main.smb.unreachable': 'The share could not be reached.',
   'main.smb.otherServer': 'Enter the password again to use it with another server.',
   'main.smb.noServer': 'Could not reach {host}. Is it on, and on this network?',
