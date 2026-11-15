@@ -6,7 +6,14 @@
 import { afterEach } from 'vitest'
 
 if (typeof window !== 'undefined') {
-  const { cleanup } = await import('@testing-library/react')
+  const { cleanup, configure } = await import('@testing-library/react')
+  /*
+    The release's Intel Mac runner is several times slower than the rest, and a
+    finished screen there took longer than the default second to appear: three
+    Library tests failed one release for that alone. A wait that ends early is
+    free on a fast machine.
+  */
+  configure({ asyncUtilTimeout: 5000 })
   const { forgetKept } = await import('../src/renderer/src/hooks/useKept')
   afterEach(() => {
     cleanup()

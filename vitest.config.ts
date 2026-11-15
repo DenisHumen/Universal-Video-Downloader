@@ -30,6 +30,8 @@ export default defineConfig({
     // Agent worktrees and other checkouts nested under .claude/ are never this checkout's tests.
     exclude: ['**/node_modules/**', '**/dist/**', '.claude/**', '**/.claude/worktrees/**'],
     reporters: 'default',
+    // The same slow runner: a renderer test that renders the whole app needs more than 5 s there.
+    testTimeout: 20_000,
     env: {
       ELECTRON_OVERRIDE_DIST_PATH:
         process.env.ELECTRON_OVERRIDE_DIST_PATH ?? resolve(__dirname, 'node_modules/.no-electron')
