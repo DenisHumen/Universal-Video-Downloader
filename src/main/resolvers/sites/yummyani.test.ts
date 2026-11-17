@@ -11,6 +11,7 @@ import {
   parseAksorTranslator,
   shortLivedCache,
   YUMMY_DOMAIN,
+  fetchYani,
   yummyQualities,
   isSeriesTitle
 } from './yummyani'
@@ -373,5 +374,34 @@ describe('isSeriesTitle', () => {
 
   it('still knows a series by what is out', () => {
     expect(isSeriesTitle(15, {})).toBe(true)
+  })
+})
+
+/*
+  November 2026: the site moved its API under its own address and api.yani.tv
+  answered every request with 502, while the site kept playing. Every watch on
+  it failed its check. The new address comes first; the old one is kept.
+*/
+describe('the site API address', () => {
+  it('asks the address the site uses first, with the site as Referer', async () => {
+    const asked: string[] = []
+    const body = await fetchYani('anime/28888/videos', async (url, headers) => {
+      asked.push(`${url} ${headers.Referer}`)
+      return '{"response":[]}'
+    })
+    expect(body).toBe('{"response":[]}')
+    expect(asked).toEqual(['https://old.yummyani.me/api/anime/28888/videos https://old.yummyani.me/'])
+  })
+
+  it('falls back to the old address when the new one fails, and says why when both do', async () => {
+    const asked: string[] = []
+    const body = await fetchYani('search?q=x', async (url) => {
+      asked.push(url)
+      if (url.startsWith('https://old.yummyani.me/')) throw new Error('HTTP 502')
+      return 'old'
+    })
+    expect(body).toBe('old')
+    expect(asked).toEqual(['https://old.yummyani.me/api/search?q=x', 'https://api.yani.tv/search?q=x'])
+    await expect(fetchYani('x', async () => Promise.reject(new Error('HTTP 502')))).rejects.toThrow('HTTP 502')
   })
 })

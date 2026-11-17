@@ -16,6 +16,31 @@ export const YUMMY_DOMAIN =
 
 const REFERER = 'https://old.yummyani.me/'
 
+/*
+  The site's own API, by the address its pages use. In November 2026 the site
+  moved its pages to old.yummyani.me/api/... and api.yani.tv began answering
+  every request with 502 from its host, while the site itself kept playing:
+  every watch failed its check. The paths and answers are the same at both, so
+  the old address stays as the fallback in case the site goes back to it.
+*/
+export const YANI_API_BASES = ['https://old.yummyani.me/api', 'https://api.yani.tv'] as const
+
+/** A GET of the site's API: its current address first, the old one if that fails. */
+export async function fetchYani(
+  path: string,
+  fetch: (url: string, headers: Record<string, string>) => Promise<string> = fetchText
+): Promise<string> {
+  let failure: unknown
+  for (const base of YANI_API_BASES) {
+    try {
+      return await fetch(`${base}/${path}`, { Referer: REFERER })
+    } catch (err) {
+      failure = err
+    }
+  }
+  throw failure
+}
+
 interface YaniVideo {
   number: string
   data: { player: string; dubbing: string }
@@ -233,7 +258,7 @@ export function shortLivedCache<T>(
 }
 
 async function fetchVideos(animeId: string): Promise<YaniVideo[]> {
-  const raw = await fetchText(`https://api.yani.tv/anime/${animeId}/videos`, { Referer: REFERER })
+  const raw = await fetchYani(`anime/${animeId}/videos`)
   return (JSON.parse(raw) as { response: YaniVideo[] }).response
 }
 
@@ -303,7 +328,7 @@ export function fullestDub(
  */
 export async function streamingFromId(animeId: string, webUrl: string): Promise<ResolvedUrl> {
   const meta = (
-    JSON.parse(await fetchText(`https://api.yani.tv/anime/${animeId}`, { Referer: REFERER })) as {
+    JSON.parse(await fetchYani(`anime/${animeId}`)) as {
       response: {
         title?: string
         poster?: YaniPoster
@@ -492,9 +517,7 @@ export interface YaniSearchItem {
 
 /** The yani.tv search answer as it comes, ids on other catalogues included. */
 export async function searchYani(query: string): Promise<YaniSearchItem[]> {
-  const raw = await fetchText(`https://api.yani.tv/search?q=${encodeURIComponent(query)}`, {
-    Referer: REFERER
-  })
+  const raw = await fetchYani(`search?q=${encodeURIComponent(query)}`)
   return (JSON.parse(raw) as { response?: YaniSearchItem[] }).response || []
 }
 
