@@ -68,7 +68,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-latest
+          # Pinned: ubuntu-latest became 26.04 in November 2026, and its rpmbuild fails
+          # under the fpm 1.9.3 electron-builder packs the .rpm with. 24.04 builds it.
+          - os: ubuntu-24.04
             args: --linux
             arch: x64
             label: linux x64

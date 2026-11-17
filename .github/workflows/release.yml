@@ -111,7 +111,9 @@ jobs:
             args: --x64
             arch: x64
             label: mac x64
-          - os: ubuntu-latest
+          # Pinned: ubuntu-latest became 26.04 in November 2026, and its rpmbuild fails
+          # under the fpm 1.9.3 electron-builder packs the .rpm with. 24.04 builds it.
+          - os: ubuntu-24.04
             platform: linux
             args: --x64
             arch: x64
@@ -394,7 +396,8 @@ jobs:
     name: Publish the apt and dnf repositories
     needs: finalize
     if: startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-latest
+    # The same: the rpm repository is signed with 24.04's rpm tools.
+    runs-on: ubuntu-24.04
     # One Pages deploy at a time, this one or website.yml's.
     concurrency:
       group: pages
